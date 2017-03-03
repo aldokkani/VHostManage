@@ -1,4 +1,5 @@
 <?php
+include 'head.html';
 if (! isset($_POST['ServerName'])) {
 
   $content = file("/etc/apache2/sites-enabled/".$_GET['f'].'.conf');
@@ -18,40 +19,73 @@ if (! isset($_POST['ServerName'])) {
 //print_r($virtualHostInfo);
 ?>
 <body>
-  <form action="edit.php" method="post">
-    <!-- saving the oldfile name in case it was changed so it gets deleted first -->
-    <input type="hidden" name="oldfile" value="/etc/apache2/sites-enabled/<?=$_GET['f']?>.conf">
-    <label for="ServerName">Server Name</label>
-    <input type="text" name="ServerName" value="<?= $virtualHostInfo['ServerName'] ?>">
-    <label for="ServerAdmin">Server Admin</label>
-    <input type="text" name="ServerAdmin" value="<?= $virtualHostInfo['ServerAdmin'] ?>">
-    <label for="DocumentRoot">Document Root</label>
-    <input type="text" name="DocumentRoot" value="<?= $virtualHostInfo['DocumentRoot'] ?>">
-    <label for="ErrorLog">ErrorLog</label>
-    <input type="text" name="ErrorLog" value="<?= $virtualHostInfo['ErrorLog'] ?>">
-    <label for="CustomLog">CustomLog</label>
-    <input type="text" name="CustomLog" value="<?= $virtualHostInfo['CustomLog'] ?>">
-    <label for="php">Enable PHP Script</label>
-    <?php
-      if (trim($virtualHostInfo['php_admin_flag']) == 'on') {
-        echo "<input type='checkbox' name='php' checked>";
-      } else {
-        echo "<input type='checkbox' name='php'>";
-      }
-    ?>
-    <input type="submit" value="Save">
-    <input type="reset">
-  </form>
+    <div class="container">
+        <?php include 'header.php'; ?>
+        <form action="edit.php" method="post">
+            <div class="form-group">
+                <label for="ServerName">Server Name</label>
+                <input class="form-control" type="text" name="ServerName" value="<?= $virtualHostInfo['ServerName'] ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="ServerAdmin">Server Admin</label>
+                <input class="form-control" type="text" name="ServerAdmin" value="<?= $virtualHostInfo['ServerAdmin'] ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="DocumentRoot">Document Root</label>
+                <input class="form-control" type="text" name="DocumentRoot" value="<?= $virtualHostInfo['DocumentRoot'] ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="ErrorLog">ErrorLog</label>
+                <input class="form-control" type="text" name="ErrorLog" value="<?= $virtualHostInfo['ErrorLog'] ?>" required>
+            </div>
+            <?php if (isset($_GET['err'])) {echo "<div class='alert alert-danger' role='alert'>ErrorLog path is not a directory!</div>";} ?>
+            <div class="form-group">
+                <label for="CustomLog">CustomLog</label>
+                <input class="form-control" type="text" name="CustomLog" value="<?= $virtualHostInfo['CustomLog'] ?>" required>
+            </div>
+            <?php if (isset($_GET['cust'])) {echo "<div class='alert alert-danger' role='alert'>CustomLog path is not a directory!</div>";} ?>
+            <!-- <div class="form-group">
+                <label for="php">Enable PHP Script</label>
+                <input type="checkbox" name="php">
+            </div> -->
+            <div class="checkbox">
+                <label for="php">
+                    <?php
+                      if (trim($virtualHostInfo['php_admin_flag']) == 'on') {
+                        echo "<input type='checkbox' checked> Check to enable PHP scripting.";
+                      } else {
+                        echo "<input type='checkbox'> Check to enable PHP scripting.";
+                      }
+                    ?>
+                </label>
+            </div>
+            <div class="form-group">
+                <input class="btn btn-primary" type="submit" value="Save">
+                <input class="btn btn-primary" type="reset">
+            </div>
+            <!-- to preserve old file name -->
+             <input type="hidden" name="oldfile" value="<?=$_GET['f']?>">
+        </form>
+    </div>
 </body>
 <?php
 } else {
-  unlink($_POST['oldfile']);
-  $php_flag = extract($_POST);
-  $virtualHostFile = fopen("/etc/apache2/sites-enabled/".$ServerName.'.conf', 'w');
-  $part1 = "<VirtualHost *:80>\nServerName $ServerName\nServerAdmin $ServerAdmin\nDocumentRoot $DocumentRoot\nErrorLog $ErrorLog\nCustomLog $CustomLog combined\nphp_admin_flag engine ";
-  $part2 = ($php_flag == 5) ? "off\n</VirtualHost>\n" : "on\n</VirtualHost>\n" ;
-  fwrite($virtualHostFile, $part1.$part2);
-  fclose($virtualHostFile);
-  header('location: index.php');
+    $php_flag = extract($_POST);
+    if (! is_dir($ErrorLog) && ! is_dir($CustomLog)) {
+        header("location: edit.php?err&cust&f=$oldfile");
+    } elseif (! is_dir($ErrorLog)) {
+        header("location: edit.php?err&f=$oldfile");
+    } elseif (! is_dir($CustomLog)) {
+        header("location: edit.php?cust&f=$oldfile");
+    } else {
+        unlink("/etc/apache2/sites-enabled/$oldfile.conf");
+        $virtualHostFile = fopen("/etc/apache2/sites-enabled/".$ServerName.'.conf', 'w');
+        $part1 = "<VirtualHost *:80>\nServerName $ServerName\nServerAdmin $ServerAdmin\nDocumentRoot $DocumentRoot\nErrorLog $ErrorLog\nCustomLog $CustomLog combined\nphp_admin_flag engine ";
+        $part2 = ($php_flag == 5) ? "off\n</VirtualHost>\n" : "on\n</VirtualHost>\n" ;
+        fwrite($virtualHostFile, $part1.$part2);
+        fclose($virtualHostFile);
+        header('location: index.php');
+    }
+
 }
 ?>
