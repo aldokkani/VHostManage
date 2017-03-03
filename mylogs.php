@@ -1,9 +1,7 @@
 <?php 
 session_start();
-$_SESSION['username']='nahla';
-$_SESSION['groupname']='serveradmin';
-$_SESSION['projectNum']=2;
-if (isset($_SESSION['username']) && isset($_SESSION['groupname']) && isset($_SESSION['projectNum'])){
+if (isset($_SESSION['groupname'] == 'serverAdmin'))
+{
 include_once('LogsSearch.php');
 
 ?>
