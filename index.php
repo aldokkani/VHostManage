@@ -19,22 +19,24 @@ if (isset($_POST['del']) ) {
   header('location: index.php');
 }
 ?>
-<form class="" action="index.php" method="post">
-  <table>
-    <th>Virtual Hosts</th>
-<?php
-foreach ($files as $file) {
-?>
-    <tr>
-      <td><a href="edit.php?f=<?=$file?>"><?=$file?></a></td>
-      <td><input type="checkbox" name="<?=$file?>"></td>
-    </tr>
+<body>
+    <form class="" action="index.php" method="post">
+      <table>
+        <th>Virtual Hosts</th>
+    <?php
+    foreach ($files as $file) {
+    ?>
+        <tr>
+          <td><a href="edit.php?f=<?=$file?>"><?=$file?></a></td>
+          <td><input type="checkbox" name="<?=$file?>"></td>
+        </tr>
 
-<?php
-}
-?>
-  </table>
-  <input type="submit" name="del" value="Delete">
-  <input type="submit" name="apache" value="Restart Apache">
-</form>
+    <?php
+    }
+    ?>
+      </table>
+      <input type="submit" name="del" value="Delete">
+      <input type="submit" name="apache" value="Restart Apache">
+    </form>
+</body>
 <a href="new.php">Create New</a>
