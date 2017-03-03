@@ -1,5 +1,13 @@
 <?php
 include 'head.html';
+#session_start();
+#if (isset($_SESSION['groupname'] == 'serverAdmin'))
+#{
+//----------------------------------------
+include_once "LogsFunctions.php";
+$message="";
+$infoType="";
+//-----------------------------------------
 if (! isset($_POST['ServerName'])) {
 ?>
 <body>
@@ -47,6 +55,10 @@ if (! isset($_POST['ServerName'])) {
 <?php
 } else {
     $php_flag = extract($_POST);
+    //-------------------------------------
+        $filename=$ServerName;
+        $str=str_replace('.com',"",$filename);
+    //---------------------------------------
     if (! is_dir($ErrorLog) && ! is_dir($CustomLog)) {
         header("location: new.php?err&cust");
     } elseif (! is_dir($ErrorLog)) {
@@ -54,12 +66,21 @@ if (! isset($_POST['ServerName'])) {
     } elseif (! is_dir($CustomLog)) {
         header("location: new.php?cust");
     } else {
-        $virtualHostFile = fopen("/etc/apache2/sites-enabled/".$ServerName.'.conf', 'w');
-        $part1 = "<VirtualHost *:80\>\nServerName $ServerName\nServerAdmin $ServerAdmin\nDocumentRoot $DocumentRoot\nErrorLog $ErrorLog\nCustomLog $CustomLog combined\nphp_admin_flag engine ";
-        $part2 = ($php_flag == 5) ? "off\n</VirtualHost>\n" : "on\n</VirtualHost>\n" ;
-        fwrite($virtualHostFile, $part1.$part2);
-        fclose($virtualHostFile);
+        $virtualHostFile = fopen("/etc/apache2/sites-enabled/".$str.'.conf', 'w');
+        if ( $virtualHostFile) {
+            $part1 = "<VirtualHost *:80\>\nServerName $ServerName\nServerAdmin $ServerAdmin\nDocumentRoot $DocumentRoot\nErrorLog $ErrorLog\nCustomLog $CustomLog combined\nphp_admin_flag engine ";
+            $part2 = ($php_flag == 5) ? "off\n</VirtualHost>\n" : "on\n</VirtualHost>\n" ;
+            fwrite($virtualHostFile, $part1.$part2);
+            fclose($virtualHostFile);
+            $message= "VirtualHost ".$ServerName." created successfully";
+            $infoType="Success";
+            infolog($message,$infoType);
+        } else {
+            $message="VirtualHost ".$ServerName.'.conf'." couldn't be created";
+            errlog($message);
+        }
         header('location: index.php');
     }
 }
+#}
 ?>
