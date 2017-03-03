@@ -1,8 +1,11 @@
 <?php
 include 'head.html';
-#session_start();
-#if (isset($_SESSION['groupname'] == 'serverAdmin'))
-#{
+session_start();
+$_SESSION['username']='ss';
+$_SESSION['groupname']='serverAdmin';
+$_SESSION['projectNum']=2;
+if ($_SESSION['groupname'] == 'serverAdmin')
+{
 //----------------------------------------
 include_once "LogsFunctions.php";
 $message="";
@@ -30,7 +33,6 @@ if (isset($_POST['del']) )
   {
     if (trim($_POST[$file]) == 'on')
     {
-
         if (unlink("/etc/apache2/sites-enabled/".$file.'.conf'))
         {
         $message= $file.'.conf'." deleted successfully";
@@ -42,7 +44,6 @@ if (isset($_POST['del']) )
         $message= $file.'.conf'." couldn't be deleted";
         errlog($message);
         }
-
     }
 
   }
@@ -89,7 +90,7 @@ if (isset($_POST['del']) )
     </div>
 </body>
 <?php
-// } else {
+}// else {
 //
 // }
 ?>

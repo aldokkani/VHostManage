@@ -1,6 +1,9 @@
-<?php 
+<?php
 session_start();
-if (isset($_SESSION['groupname'] == 'serverAdmin'))
+$_SESSION['username']='ss';
+$_SESSION['groupname']='serverAdmin';
+$_SESSION['projectNum']=2;
+if ($_SESSION['groupname'] == 'serverAdmin')
 {
 include_once('LogsSearch.php');
 
@@ -15,15 +18,15 @@ include_once('LogsSearch.php');
     <meta name="description" content="">
     <meta name="author" content="">
     <title>Logging Application</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link href="css/simple-sidebar.css" rel="stylesheet">
-	<style>	
+	<style>
 		body
 		{
 			background-image: url("mapimage.jpg") ;
 			background-size: cover;
 			color: white;
-		}		
+		}
 		.iframecls {
 		    width: 100%;
 		    height: 673px;
@@ -66,7 +69,7 @@ include_once('LogsSearch.php');
         {
             margin-left: 20px !important;
         }
-        
+
         .jumbotron
         {
             text-align: center;
@@ -87,7 +90,7 @@ include_once('LogsSearch.php');
             left: 9%;
             margin: 0 auto;
 		    margin-left: 258px;
-          
+
         }
 
 	</style>
@@ -115,8 +118,8 @@ include_once('LogsSearch.php');
 									<option value="warning">Warning</option>
 								</select>
 							</div>
-					</div>				
-                </li>				
+					</div>
+                </li>
                 <li>
                 	<div class="checkbox">
 					  <label><input name="date" type="checkbox" value="" class="criteriacheckbox" onclick='handleClick(this);'>Filter by Date</label>
@@ -124,22 +127,22 @@ include_once('LogsSearch.php');
 					</div>
 
 					<div id="daybox" class="filterdiv">
-								
+
 					</div>
 					</div>
-                </li>  				
+                </li>
   				<li>
                 	<div class="checkbox">
 					  <label><input name="time" type="checkbox" value="" class="criteriacheckbox" onclick='handleClick(this);'>Filter by Time</label>
 					 <div id="timebox" class="filterdiv">
-							
+
 					</div>
 					</div>
                 </li>
                 <li>
                 	<div class="checkbox">
 					  <label><input name="message" type="checkbox" value="" class="criteriacheckbox" onclick='handleClick(this);'>Filter by Message</label>
-						  
+
 						  <div id="messagebox" class="filtercrit filterdiv">
 
 						  </div>
@@ -149,7 +152,7 @@ include_once('LogsSearch.php');
                 	<input  name="search" type="submit" value="Submit and get Search results" class="btn btn-default submitbutton">
 
                 </li>
-            </ul>		
+            </ul>
 			</form>
         </div>
 		<div style="display:inline-block;vertical-align: top;">
@@ -198,21 +201,21 @@ printSearch($team,$fileTag,$month,$day,$time,$message);
 					}
 					else if(x == "time")
 					{
-							document.getElementById("timebox").innerHTML ="";							
+							document.getElementById("timebox").innerHTML ="";
 					}
 				}
-			    
+
 			}
 
 
 
-			function changeFunction(x) {			
-				
+			function changeFunction(x) {
+
 				 if(x=="message"){
 					document.getElementById("messagebox").innerHTML ="<input class=\"form-control\" type=\"text\" name=\"text\">";
 				}
-				
-				else if(x=="date"){					
+
+				else if(x=="date"){
 
 					document.getElementById("monthbox").innerHTML ="<select class='mainselection btn btn-default' name=\"month\">\
 						<option  value=\"default\">choose</option>\
@@ -233,23 +236,23 @@ printSearch($team,$fileTag,$month,$day,$time,$message);
 					    y+="<option value='0' selected='selected'>0</option>";
 						for(var i=1;i<=31;i++){
 							y+="<option  value=\""+i+"\">"+i+"</option>";
-						
+
 						}
-							y+="</select>";	
+							y+="</select>";
 
 					   document.getElementById("monthbox").innerHTML +=y;
 
 				}
 
 				else if(x=="time"){
-					
+
 					var y="<select class='mainselection btn btn-default' id=\"time\" name=\"time\">";
 
 						for(var i=1;i<=24;i++){
 							y+="<option  value=\""+i+"\">"+i+"</option>";
-						
+
 						}
-							y+="</select>";	
+							y+="</select>";
 
 					document.getElementById("timebox").innerHTML =y;
 				}

@@ -1,8 +1,11 @@
 <?php
 include 'head.html';
-#session_start();
-#if (isset($_SESSION['groupname'] == 'serverAdmin'))
-#{
+session_start();
+$_SESSION['username']='ss';
+$_SESSION['groupname']='serverAdmin';
+$_SESSION['projectNum']=2;
+if ($_SESSION['groupname'] == 'serverAdmin')
+{
 //----------------------------------------
 include_once "LogsFunctions.php";
 $message="";
@@ -57,7 +60,7 @@ if (! isset($_POST['ServerName'])) {
     $php_flag = extract($_POST);
     //-------------------------------------
         $filename=$ServerName;
-        $str=str_replace('.com',"",$filename);
+        $str=str_replace('.',"_",$filename);
     //---------------------------------------
     if (! is_dir($ErrorLog) && ! is_dir($CustomLog)) {
         header("location: new.php?err&cust");
@@ -82,5 +85,5 @@ if (! isset($_POST['ServerName'])) {
         header('location: index.php');
     }
 }
-#}
+}
 ?>

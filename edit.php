@@ -1,9 +1,12 @@
 <?php
 
 include 'head.html';
-#session_start();
-#if (isset($_SESSION['groupname'] == 'serverAdmin'))
-#{
+session_start();
+$_SESSION['username']='ss';
+$_SESSION['groupname']='serverAdmin';
+$_SESSION['projectNum']=2;
+if ($_SESSION['groupname'] == 'serverAdmin')
+{
 //----------------------------------------
 include_once "LogsFunctions.php";
 $message="";
@@ -63,9 +66,9 @@ if (! isset($_POST['ServerName'])) {
                 <label for="php">
                     <?php
                       if (trim($virtualHostInfo['php_admin_flag']) == 'on') {
-                        echo "<input type='checkbox' checked> Check to enable PHP scripting.";
+                        echo "<input name='php' type='checkbox' checked> Check to enable PHP scripting.";
                       } else {
-                        echo "<input type='checkbox'> Check to enable PHP scripting.";
+                        echo "<input name='php' type='checkbox'> Check to enable PHP scripting.";
                       }
                     ?>
                 </label>
@@ -82,18 +85,28 @@ if (! isset($_POST['ServerName'])) {
 <?php
 } else {
     $php_flag = extract($_POST);
-    if (! is_dir($ErrorLog) && ! is_dir($CustomLog)) {
+    //-------------------------------------
+        $filename=$ServerName;
+        $str=str_replace('.',"_",$filename);
+    //---------------------------------------
+    $errTmp = explode("/", $ErrorLog);
+    $custTmp = explode("/", $CustomLog);
+    unset($errTmp[count($errTmp)-1]);
+    $errTmp = implode("/", $errTmp);
+    unset($custTmp[count($custTmp)-1]);
+    $custTmp = implode("/", $custTmp);
+    if ((! is_dir($errTmp) && ! is_dir($custTmp)) || (is_dir($ErrorLog) && is_dir($CustomLog))) {
         header("location: edit.php?err&cust&f=$oldfile");
-    } elseif (! is_dir($ErrorLog)) {
+    } elseif (! is_dir($errTmp) || is_dir($ErrorLog)) {
         header("location: edit.php?err&f=$oldfile");
-    } elseif (! is_dir($CustomLog)) {
+    } elseif (! is_dir($custTmp) || is_dir($CustomLog)) {
         header("location: edit.php?cust&f=$oldfile");
     } else {
         unlink("/etc/apache2/sites-enabled/$oldfile.conf");
         $virtualHostFile = fopen("/etc/apache2/sites-enabled/".$ServerName.'.conf', 'w');
         if ( $virtualHostFile) {
             $part1 = "<VirtualHost *:80>\nServerName $ServerName\nServerAdmin $ServerAdmin\nDocumentRoot $DocumentRoot\nErrorLog $ErrorLog\nCustomLog $CustomLog combined\nphp_admin_flag engine ";
-            $part2 = ($php_flag == 5) ? "off\n</VirtualHost>\n" : "on\n</VirtualHost>\n" ;
+            $part2 = ($php_flag == 6) ? "off\n</VirtualHost>\n" : "on\n</VirtualHost>\n" ;
             fwrite($virtualHostFile, $part1.$part2);
             fclose($virtualHostFile);
             $message= "VirtualHost ".$ServerName." edited successfully";
@@ -108,5 +121,5 @@ if (! isset($_POST['ServerName'])) {
        header('location: index.php');
     }
 }
-#}
+}
 ?>
