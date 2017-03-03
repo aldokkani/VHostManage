@@ -14,7 +14,7 @@ $files = `ls /etc/apache2/sites-enabled/`;
 $files = explode(".conf\n",$files);
 # Line 11 removes empty element in at the end of the $files array.
 unset($files[count($files)-1]);
-
+//print_r ($files);
 #print_r($_POST);
 if (isset($_POST['apache'])) 
 {
@@ -33,7 +33,7 @@ if (isset($_POST['del']) )
     if (trim($_POST[$file]) == 'on') 
     {
     
-        if (unlink("/etc/apache2/sites-enabled/".$file.'.con'))
+        if (unlink("/etc/apache2/sites-enabled/".$file.'.conf'))
         {
         $message= $file.'.conf'." deleted successfully";
         $infoType="Success";
@@ -71,6 +71,7 @@ foreach ($files as $file) {
   <input type="submit" name="apache" value="Restart Apache">
 </form>
 <a href="new.php">Create New</a>
+<a href="mylogs.php">Show Logs</a>
 <?php
 }
 else

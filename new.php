@@ -35,9 +35,11 @@ if (! isset($_POST['ServerName'])) {
 else 
 {
   $php_flag = extract($_POST);
-    
-
-      $virtualHostFile = fopen("/etc/apache2/sites-enabled/".$ServerName.'.conf', 'w');
+//-------------------------------------
+    $filename=$ServerName;
+    $str=str_replace('.com',"",$filename);   
+//---------------------------------------
+      $virtualHostFile = fopen("/etc/apache2/sites-enabled/".$str.'.conf', 'w');
     if ( $virtualHostFile)
     {
       $part1 = "<VirtualHost *:80\>\nServerName $ServerName\nServerAdmin $ServerAdmin\nDocumentRoot $DocumentRoot\nErrorLog $ErrorLog\nCustomLog $CustomLog combined\nphp_admin_flag engine ";
