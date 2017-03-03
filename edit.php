@@ -1,4 +1,15 @@
 <?php
+session_start();
+$_SESSION['username']='nahla';
+$_SESSION['groupname']='serveradmin';
+$_SESSION['projectNum']=2;
+if (isset($_SESSION['username']) && isset($_SESSION['groupname']) && isset($_SESSION['projectNum']))
+{
+//----------------------------------------
+include_once "LogsFunctions.php";
+$message="";
+$infoType="";
+//-----------------------------------------
 if (! isset($_POST['ServerName'])) {
 
   $content = file("/etc/apache2/sites-enabled/".$_GET['f'].'.conf');
@@ -12,7 +23,9 @@ if (! isset($_POST['ServerName'])) {
     }
     $arr = explode(' ',$content[6]);
     $virtualHostInfo = array_merge($virtualHostInfo, array(ltrim($arr[0]) => $arr[2]));
-  } else {
+  }
+    else 
+  {
     echo "not opend\n";
   }
 //print_r($virtualHostInfo);
@@ -44,14 +57,28 @@ if (! isset($_POST['ServerName'])) {
   </form>
 </body>
 <?php
-} else {
+}
+    else 
+{
   unlink($_POST['oldfile']);
   $php_flag = extract($_POST);
   $virtualHostFile = fopen("/etc/apache2/sites-enabled/".$ServerName.'.conf', 'w');
-  $part1 = "<VirtualHost *:80>\nServerName $ServerName\nServerAdmin $ServerAdmin\nDocumentRoot $DocumentRoot\nErrorLog $ErrorLog\nCustomLog $CustomLog combined\nphp_admin_flag engine ";
-  $part2 = ($php_flag == 5) ? "off\n</VirtualHost>\n" : "on\n</VirtualHost>\n" ;
-  fwrite($virtualHostFile, $part1.$part2);
-  fclose($virtualHostFile);
+    if ( $virtualHostFile)
+    {
+      $part1 = "<VirtualHost *:80>\nServerName $ServerName\nServerAdmin $ServerAdmin\nDocumentRoot $DocumentRoot\nErrorLog $ErrorLog\nCustomLog $CustomLog combined\nphp_admin_flag engine ";
+      $part2 = ($php_flag == 5) ? "off\n</VirtualHost>\n" : "on\n</VirtualHost>\n" ;
+      fwrite($virtualHostFile, $part1.$part2);
+      fclose($virtualHostFile);
+         $message= "VirtualHost ".$ServerName." edited successfully";
+        $infoType="Success";
+        infolog($message,$infoType);
+    }
+    else
+    {
+         $message="VirtualHost ".$ServerName.'.conf'." couldn't be edited"; 
+        errlog($message);
+    }
   header('location: index.php');
+}
 }
 ?>
